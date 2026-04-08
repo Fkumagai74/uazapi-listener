@@ -2,25 +2,27 @@ const EventSource = require('eventsource');
 const fetch = require('node-fetch');
 
 const TOKEN = process.env.UAZAPI_TOKEN;
-const SSE_URL = `https://meeting.uazapi.com/sse`;
-
-const es = new EventSource(SSE_URL, {
-  headers: {
-    Authorization: `Bearer ${TOKEN}`
-  }
-});
 const N8N_WEBHOOK = process.env.N8N_WEBHOOK;
+
+const SSE_URL = 'https://meeting.uazapi.com/sse';
 
 const ultimoStatus = {};
 
 function conectar() {
   console.log('🔌 Conectando ao SSE...');
 
-  const es = new EventSource(SSE_URL);
+  const es = new EventSource(SSE_URL, {
+    headers: {
+      Authorization: `Bearer ${TOKEN}`
+    }
+  });
 
   es.onmessage = async (event) => {
     try {
       const data = JSON.parse(event.data);
+
+      // 🔍 debug inicial
+      console.log('📥 Evento recebido:', data);
 
       if (!data.instance) return;
 
@@ -43,16 +45,20 @@ function conectar() {
     }
   };
 
-  es.onerror = () => {
-    console.log('Reconectando em 5s...');
-    es.close();
-    setTimeout(conectar, 5000);
+  es.onerror = (err) => {
+    console.log('⚠️ Erro SSE:', err?.message || err);
+
+    // NÃO fecha o processo
+    setTimeout(() => {
+      conectar();
+    }, 5000);
   };
 }
 
 conectar();
 
-// 👇 servidor fake só pra EasyPanel não derrubar o app
+
+// 👇 servidor fake (mantém o container vivo)
 const http = require('http');
 
 const PORT = process.env.PORT || 3000;
