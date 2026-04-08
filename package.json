@@ -1,0 +1,12 @@
+{
+  "name": "uazapi-listener",
+  "version": "1.0.0",
+  "main": "listener.js",
+  "scripts": {
+    "start": "node listener.js"
+  },
+  "dependencies": {
+    "eventsource": "^2.0.2",
+    "node-fetch": "^2.6.7"
+  }
+}
