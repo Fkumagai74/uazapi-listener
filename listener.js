@@ -2,7 +2,13 @@ const EventSource = require('eventsource');
 const fetch = require('node-fetch');
 
 const TOKEN = process.env.UAZAPI_TOKEN;
-const SSE_URL = `https://meeting.uazapi.com/events?token=${TOKEN}`;
+const SSE_URL = `https://meeting.uazapi.com/sse`;
+
+const es = new EventSource(SSE_URL, {
+  headers: {
+    Authorization: `Bearer ${TOKEN}`
+  }
+});
 const N8N_WEBHOOK = process.env.N8N_WEBHOOK;
 
 const ultimoStatus = {};
